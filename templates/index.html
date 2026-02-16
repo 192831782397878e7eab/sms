@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mochi Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0; background-color: #141414; color: #fff;
+            font-family: 'Inter', sans-serif; min-height: 100dvh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #141414; border-radius: 12px;
+            border: 1px solid #222; padding: 32px;
+            box-shadow: 0 0 15px #0008; max-width: 450px; width: 100%;
+        }
+
+        h2 { margin: 0 0 8px; font-weight: 600; font-size: 1.75rem; letter-spacing: 0.02em; }
+        p { margin: 0 0 24px; font-weight: 400; font-size: 0.95rem; color: #aaa; }
+
+        .input-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: #ddd; }
+
+        input {
+            width: 100%; background-color: #1c1c1c; border: 1px solid #333;
+            color: #fff; padding: 14px; border-radius: 10px; font-family: 'Inter';
+            box-sizing: border-box; transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: #fff; background-color: #222; }
+
+        .btn-action {
+            width: 100%; padding: 14px 0; font-family: 'Inter'; font-weight: 600;
+            font-size: 1rem; border-radius: 10px; cursor: pointer;
+            transition: 0.3s ease; margin-top: 10px;
+        }
+
+        #saveBtn { background-color: #222; border: 2px solid #333; color: #fff; }
+        #saveBtn:hover { background-color: #333; border-color: #fff; }
+
+        #stopBtn { background-color: #ff4b2b; border: none; color: #fff; display: none; }
+        #stopBtn:hover { background-color: #ff3311; }
+
+        .status-area {
+            margin-top: 25px; padding-top: 20px; border-top: 1px solid #222;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .dot { width: 8px; height: 8px; background-color: #444; border-radius: 50%; }
+        .dot-active { background-color: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        
+        #statusLabel { font-size: 0.85rem; color: #666; font-weight: 600; }
+        .text-active { color: #00ff88 !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mochi SMS Bomber</h2>
+        <p>Spamlamak için lütfen bir numara girin.</p>
+
+        <div class="input-group">
+            <label>TELEFON NUMARASI</label>
+            <input type="text" id="tel" placeholder="5xx xxx xx xx" maxlength="10">
+        </div>
+
+        <div class="input-group">
+            <label>E-POSTA (OPSİYONEL)</label>
+            <input type="email" id="mail" placeholder="ornek@mail.com">
+        </div>
+
+        <button id="saveBtn" onclick="control('baslat')" class="btn-action">BAŞLA!!!🤑🤑</button>
+        <button id="stopBtn" onclick="control('durdur')" class="btn-action">DURDUR😭</button>
+
+        <div class="status-area">
+            <div id="dot" class="dot"></div>
+            <span id="statusLabel">SİSTEM BEKLEMEDE</span>
+        </div>
+    </div>
+
+    <script>
+        function control(action) {
+            const tel = document.getElementById('tel').value;
+            const mail = document.getElementById('mail').value;
+            const btnS = document.getElementById('saveBtn');
+            const btnP = document.getElementById('stopBtn');
+            const label = document.getElementById('statusLabel');
+            const dot = document.getElementById('dot');
+
+            if(action === 'baslat' && tel.length < 10) { alert("Numarayı kontrol et!"); return; }
+
+            fetch('/islem', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({action: action, tel: tel, mail: mail})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(action === 'baslat') {
+                    btnS.style.display = 'none';
+                    btnP.style.display = 'block';
+                    label.innerText = "SALDIRI DEVAM EDİYOR";
+                    label.className = "text-active";
+                    dot.className = "dot dot-active";
+                } else {
+                    btnS.style.display = 'block';
+                    btnP.style.display = 'none';
+                    label.innerText = "SİSTEM BEKLEMEDE";
+                    label.className = "";
+                    dot.className = "dot";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
